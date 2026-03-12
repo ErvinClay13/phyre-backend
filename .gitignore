@@ -11,7 +11,6 @@ node_modules/
 .env
 .env.*
 firebase-admin.json
-*.json
 
 # (If you ONLY want to ignore firebase-admin.json,
 # remove *.json and keep just firebase-admin.json)
