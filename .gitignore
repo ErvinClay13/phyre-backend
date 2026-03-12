@@ -1,0 +1,32 @@
+# ----------------------------------------
+# Backend Dependencies
+# ----------------------------------------
+
+node_modules/
+
+# ----------------------------------------
+# 🔐 Environment & Secrets
+# ----------------------------------------
+
+.env
+.env.*
+firebase-admin.json
+*.json
+
+# (If you ONLY want to ignore firebase-admin.json,
+# remove *.json and keep just firebase-admin.json)
+
+# ----------------------------------------
+# Logs
+# ----------------------------------------
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------------------------------
+# OS Files
+# ----------------------------------------
+
+.DS_Store
+Thumbs.db
