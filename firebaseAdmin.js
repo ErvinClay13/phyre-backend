@@ -1,16 +1,11 @@
 import admin from "firebase-admin";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
-// Needed for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+/*
+  Firebase Admin credentials are stored in Render
+  as an environment variable called FIREBASE_ADMIN_JSON
+*/
 
-// Read service account file
-const serviceAccount = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "firebase-admin.json"), "utf8")
-);
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
