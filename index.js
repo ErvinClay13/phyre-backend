@@ -52,12 +52,67 @@ app.post("/send-push", async (req, res) => {
     await expo.sendPushNotificationsAsync([message]);
 
     return res.json({ success: true });
+
   } catch (err) {
     console.log("Push error:", err);
     return res.status(500).json({ error: "Push failed" });
   }
 });
 
-app.listen(5000, () => {
-  console.log("🚀 Push server running on port 5000");
+
+/* -------------------------------------------------- */
+/* 🎥 LIVEKIT TOKEN GENERATOR */
+/* -------------------------------------------------- */
+
+app.post("/livekit-token", async (req, res) => {
+  try {
+    const { room, user } = req.body;
+
+    if (!room || !user) {
+      return res.status(400).json({ error: "Missing room or user" });
+    }
+
+    const at = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: user,
+      }
+    );
+
+    at.addGrant({
+      roomJoin: true,
+      room: room,
+      canPublish: true,
+      canSubscribe: true,
+    });
+
+    const token = await at.toJwt();
+
+    res.json({ token });
+
+  } catch (err) {
+    console.error("LiveKit token error:", err);
+    res.status(500).json({ error: "Token creation failed" });
+  }
+});
+
+
+/* -------------------------------------------------- */
+/* ❤️ HEALTH CHECK */
+/* -------------------------------------------------- */
+
+app.get("/", (req, res) => {
+  res.send("Phyre backend running 🚀");
+});
+
+
+/* -------------------------------------------------- */
+/* 🚀 START SERVER */
+/* -------------------------------------------------- */
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
