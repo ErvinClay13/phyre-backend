@@ -54,7 +54,7 @@ app.post("/send-push", async (req, res) => {
     return res.json({ success: true });
 
   } catch (err) {
-    console.log("Push error:", err);
+    console.error("Push error:", err);
     return res.status(500).json({ error: "Push failed" });
   }
 });
@@ -66,10 +66,19 @@ app.post("/send-push", async (req, res) => {
 
 app.post("/livekit-token", async (req, res) => {
   try {
+
+    console.log("🔥 LiveKit token request received:", req.body);
+
     const { room, user } = req.body;
 
     if (!room || !user) {
+      console.log("❌ Missing room or user");
       return res.status(400).json({ error: "Missing room or user" });
+    }
+
+    if (!process.env.LIVEKIT_API_KEY || !process.env.LIVEKIT_API_SECRET) {
+      console.log("❌ Missing LiveKit env variables");
+      return res.status(500).json({ error: "Server config error" });
     }
 
     const at = new AccessToken(
@@ -89,10 +98,12 @@ app.post("/livekit-token", async (req, res) => {
 
     const token = await at.toJwt();
 
+    console.log("✅ LiveKit token generated for:", user, "room:", room);
+
     res.json({ token });
 
   } catch (err) {
-    console.error("LiveKit token error:", err);
+    console.error("❌ LiveKit token error:", err);
     res.status(500).json({ error: "Token creation failed" });
   }
 });
