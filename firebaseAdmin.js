@@ -1,15 +1,34 @@
 import admin from "firebase-admin";
 
-/*
-  Firebase Admin credentials are stored in Render
-  as an environment variable called FIREBASE_ADMIN_JSON
-*/
+let serviceAccount;
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+/* -------------------------------------------------- */
+/* 🔐 LOAD SERVICE ACCOUNT */
+/* -------------------------------------------------- */
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+if (process.env.FIREBASE_ADMIN_JSON) {
+  // ✅ Production (Render)
+  serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+} else {
+  // ✅ Local development
+  const fs = await import("fs");
+  const path = new URL("./firebase-admin.json", import.meta.url);
 
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+  const file = fs.readFileSync(path, "utf-8");
+  serviceAccount = JSON.parse(file);
+}
+
+/* -------------------------------------------------- */
+/* 🚀 INIT FIREBASE ADMIN */
+/* -------------------------------------------------- */
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
+const adminDb = admin.firestore();
+const adminAuth = admin.auth();
+
+export { adminDb, adminAuth };
